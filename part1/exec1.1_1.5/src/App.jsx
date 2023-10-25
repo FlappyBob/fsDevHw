@@ -1,5 +1,4 @@
 
-
 const App = () => {
   const course = 'Half Stack application development'
   const parts = [
