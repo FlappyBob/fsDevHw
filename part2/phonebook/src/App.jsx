@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/axiosFunction'
 import components from './components/notes'
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -8,7 +8,7 @@ const App = () => {
   const [newChar, setNewChar] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
+    personService.getAll()
       .then((response) => {
         setPersons(response.data)
       })
@@ -29,10 +29,10 @@ const App = () => {
     if (persons.map(person => person.name).includes(person.name)) {
       if (window.confirm(`${newName} is already in the phone book, replace old number with a new one?`)) {
         const oldPersonId = persons.find(person => person.name === newName).id;
-        axios.delete(`http://localhost:3001/persons/${oldPersonId}`)
+        personService.del(oldPersonId)
           .then((response) => {
             console.log(`delete success! response info -> `, response)
-            axios.post('http://localhost:3001/persons', person)
+            personService.post(person)
               .then((response) => {
                 setPersons(persons.filter(person => person.id !== oldPersonId).concat(response.data))
                 console.log(`post success! persons info -> `, persons)
@@ -42,7 +42,7 @@ const App = () => {
           })
       }
     } else {
-      axios.post('http://localhost:3001/persons', person)
+      personService.post(person)
         .then((response) => {
           setPersons(persons.concat(response.data))
           setNewName('')
@@ -67,12 +67,11 @@ const App = () => {
   }
 
   const deleteHandle = (id) => {
-    const url = `http://localhost:3001/persons/${id}`
     if (window.confirm(`Delete ${persons.find(person => person.id === id).name}?`)) {
-      axios.delete(url)
+      personService.del(id)
         .then((response) => {
           console.log(response.data)
-          setPersons(persons.filter(person => person.id !== id))
+          setPersons(persons.filter(person => person.iFd !== id))
         })
     }
   }

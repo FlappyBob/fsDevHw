@@ -2,15 +2,22 @@ import axios from 'axios'
 const dataurl = 'http://localhost:3001/persons'
 
 const getAll = () => {
-    axios.get(dataurl)
-    .then((response) => {
-        
-    })
+    const response = axios.get(dataurl);
+    return response 
 }
 
-const addNewObject = (newObject) => {
-    axios.post(dataurl, newObject)
-    .then((response) => {
-        
-    })
+const post = (newObject) => {
+    const response = axios.post(dataurl, newObject);
+    return response 
+}
+
+const del = (id) => {
+    const response = axios.delete(`${dataurl}/${id}`)
+    return response
+}
+
+export default {
+    getAll,
+    post, 
+    del 
 }
