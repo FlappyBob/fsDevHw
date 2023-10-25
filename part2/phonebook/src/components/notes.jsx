@@ -1,10 +1,25 @@
-const Person = ({ person, deleteHandle}) => {
+const Person = ({ person, deleteHandle }) => {
+  return (
+    <li>
+      {person.name} {person.number}
+      <button onClick={deleteHandle}>delete</button>
+    </li>
+  )
+}
+
+const Notification = ({type, message}) => {
+  if (message == '') return null
+  if (type === 0) {
     return (
-      <div>
-        {person.name} {person.number}
-        <button onClick={deleteHandle}>delete</button>
+      <div className="errorMessage">
+        {message}
       </div>
     )
- }
-
-export default {Person}
+  }
+  return (
+    <div className="successMessage">
+      {message}
+    </div>
+  )
+}
+export default {Person, Notification }

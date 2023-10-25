@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import personService from './services/axiosFunction'
 import components from './components/notes'
+import './index.css'
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newChar, setNewChar] = useState('')
+  const [message, setMessage] = useState('')
+  const [messageType, setMessageType] = useState(1)
 
   useEffect(() => {
     personService.getAll()
@@ -34,21 +37,45 @@ const App = () => {
             console.log(`delete success! response info -> `, response)
             personService.post(person)
               .then((response) => {
+                successNotification(person)
                 setPersons(persons.filter(person => person.id !== oldPersonId).concat(response.data))
                 console.log(`post success! persons info -> `, persons)
                 setNewName('')
                 setNewNumber('')
               })
           })
+          .catch((error) => {
+            console.log(`delete fail! error info -> `, error)
+            failNotification(person) 
+          })
       }
     } else {
       personService.post(person)
         .then((response) => {
+          // display the message
+          successNotification(person)
           setPersons(persons.concat(response.data))
           setNewName('')
           setNewNumber('')
         })
     }
+  }
+
+  const successNotification = (person) => {
+    setMessage(`Added ${person.name}`)
+    setTimeout(() => {
+      setMessage(null)
+      setMessageType(1)
+    }, 5000)
+  }
+
+  const failNotification = (person) => {
+    setMessageType(0)
+    setMessage(`Fail! ${person.name} was already removed from server`)
+    setTimeout(() => {
+      setMessage(null)
+      setMessageType(1)
+    }, 5000)
   }
 
   const handlerText = (event) => {
@@ -71,7 +98,12 @@ const App = () => {
       personService.del(id)
         .then((response) => {
           console.log(response.data)
-          setPersons(persons.filter(person => person.iFd !== id))
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch((error) => {
+          console.log(`delete fail! error info -> `, error)
+          failNotification(persons.find(person => person.id === id)) 
+          setPersons(persons.filter(person => person.id !== id))
         })
     }
   }
@@ -88,7 +120,8 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      <components.Notification type={messageType} message={message} />
       filter shown with: <input type='text' value={newChar} onChange={handleChar} />
       <h3>Add a new</h3>
       <Form handlerSubmit={handlerSubmit} handlerNumber={handlerNumber} handlerText={handlerText} newName={newName} newNumber={newNumber} />
